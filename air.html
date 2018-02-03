@@ -18,27 +18,26 @@
           margin: auto;
           width: 1100px;
       }
-
-      svg {
-        width: 960px;
-        height: 500px;
-      }
     </style>
+
+
   </head>
   <body>
-    <h1 class="halign" style="color: #d11245">Air Quality Analysis</h1>
+    <h1 class="halign" style="color: #d11245">Air Quality Analysis - NO2 vs SO2</h1>
     <h2 class="halign" style="margin-bottom:25px; color: #14a5c9">Neelesh Kumar Boddu</h2>
-    <p></p>
 
-    <div class="center">
+
+    <div class="center" style="margin-bottom:50px">
       <svg width="1100" height="500" ></svg>
     </div>
-
+    <h4 class="halign" style="color: #d11245">Data description and context</h4>
+    <h4 class="halign" style="color: #14a5c9">Background and class expectation:</h4>
+    <p></p>
 
     <script>
       const xValue = d => d.NO2;
       const yValue = d => d.SO2;
-      const margin = { left: 20, right: 15, top: 60, bottom: 60 };
+      const margin = { left: 70, right: 20, top: 20, bottom: 50 };
 
       const svg = d3.select('svg');
       const width = svg.attr('width');
@@ -55,8 +54,8 @@
       const xScale = d3.scaleLinear();
       const yScale = d3.scaleLinear();
 
-      const xAxis = d3.axisBottom().scale(xScale);
-      const yAxis = d3.axisLeft().scale(yScale);
+      const xAxis = d3.axisBottom().ticks(15).scale(xScale);
+      const yAxis = d3.axisLeft().ticks(15).scale(yScale);
 
       const row = d => {
         d.SO2 = +d.SO2;
@@ -66,11 +65,11 @@
 
       d3.csv('hydair.csv', row, data => {
         xScale
-          .domain([0,d3.max(xValue)])
+          .domain([0, d3.max(data, xValue)])
           .range([0, innerWidth]);
 
         yScale
-          .domain([0,d3.max(yValue)])
+          .domain([0, d3.max(data, yValue)])
           .range([innerHeight, 0]);
 
         g.selectAll('circle').data(data)
@@ -80,7 +79,22 @@
             .attr('r', 2);
 
         xAxisG.call(xAxis);
+        svg.append("text")
+            .attr("transform", "translate(" + (width/2) + " ," +
+                           (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("NO2 concentration (in ppb)");
+
         yAxisG.call(yAxis);
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x",0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("SO2 concentration (in ppm)");
+
+
       });
     </script>
   </body>
