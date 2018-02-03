@@ -4,41 +4,46 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <title>Basic Scatter Plot</title>
+    <title>NO2 vs SO2 Scatter Plot</title>
     <style>
       body {
-        margin: 0px
+        margin: 0px;
+        background-color: #8cf1ff;
       }
 
+      /* Align svg to the center for ease of labeling and better visibility*/
+      svg {
+        margin-left:auto;
+        margin-right:auto;
+        display:block;
+      }
+
+      /* Create rule to align headings and text to the center */
       .halign {
         text-align: center;
       }
 
-      .center {
-          margin: auto;
-          width: 960px;
-      }
-
-      svg {
-        width: 960px;
-        height: 500px;
-      }
     </style>
+
+
   </head>
   <body>
-    <h1 class="halign">Air Quality Analysis</h1>
-    <h2 class="halign" style="margin-bottom:25px">Neelesh Kumar Boddu</h2>
-    <p></p>
+    <h1 class="halign" style="color: #d11245">Air Quality Correlation Analysis - NO2 vs SO2</h1>
+    <h2 class="halign" style="margin-bottom:50px; color: #006dc6">Neelesh Kumar Boddu</h2>
 
-    <div class="center">
-      <svg width="960" height="500" ></svg>
-    </div>
+    <svg width="900" height="450"></svg>
 
+    <h4 class="halign">Plot description</h4>
+    <p>The above visualization plots SO2(Sulfur Dioxide) and NO2(Nitrogen Dioxide) concentrations against each other to examine their correlation, which is often done in air quality analysis, as part of measuring and comparing ambient air pollutant levels.</p>
+    <h4 class="halign">Dataset description</h4>
+    <p>The data here pertains to the values reported from an air quality monitoring station located at an industrial area in Hyderabad, India. There are 5 variables (date, SO2, NO2, RSPM, SPM) and 536 records. This data was collected by contacting government environmental agencies and accessing their data bank from "cpcdedb.nic.in". The SO2 values are in ppm and the NO2 values are in ppb which are the standard units in which the permissible limits and reports are defined.</p>
+    <h4 class="halign">Background and course motivation</h4>
+    <p>The dataset used here is part of my undergrad mini-project involving air quality analysis using R and Tableau. I'm interested in the potential of data and using visualizations to understand data, interact with it and analyze it is very appealing to me. As for web development, I have worked on HTML, CSS, C# and Selenium during my undergrad summer internship. However, I do not have much experience in Javascript and I want to learn. As such, this course is a great opportunity for me to understand perception, cognition and delve into using d3 as a tool for the art of creating powerful and appealing visualizations in the web development paradigm.</p>
 
     <script>
-      const xValue = d => d.Horsepower;
-      const yValue = d => d.Displacement;
-      const margin = { left: 30, right: 20, top: 20, bottom: 20 };
+      const xValue = d => d.NO2;
+      const yValue = d => d.SO2;
+      const margin = { left: 70, right: 20, top: 70, bottom: 100 };
 
       const svg = d3.select('svg');
       const width = svg.attr('width');
@@ -56,32 +61,68 @@
       const yScale = d3.scaleLinear();
 
       const xAxis = d3.axisBottom().scale(xScale);
-      const yAxis = d3.axisLeft().scale(yScale);
+      const yAxis = d3.axisLeft().ticks(15).scale(yScale);
 
       const row = d => {
-        d.Horsepower = +d.Horsepower;
-        d.Displacement = +d.Displacement;
+        d.SO2 = +d.SO2;
+        d.NO2 = +d.NO2;
         return d;
       };
 
-      d3.csv('cars.csv', row, data => {
+      d3.csv('hydair.csv', row, data => {
         xScale
-          .domain(d3.extent(data, xValue))
+          .domain([0, d3.max(data, xValue)])
           .range([0, innerWidth]);
 
         yScale
-          .domain(d3.extent(data, yValue))
+          .domain([0, d3.max(data, yValue)])
           .range([innerHeight, 0]);
 
         g.selectAll('circle').data(data)
           .enter().append('circle')
             .attr('cx', d => xScale(xValue(d)))
             .attr('cy', d => yScale(yValue(d)))
-            .attr('r', 5);
+            .attr('r', 2)
+            .style("fill","#7423ff");
 
         xAxisG.call(xAxis);
         yAxisG.call(yAxis);
+
       });
+      // Add a title to the plot
+      svg.append("text")
+          .attr("x", width/2)
+          .attr("y", 20)
+          .attr("text-anchor", "middle")
+          .attr("font-family","sans-serif")
+          .attr("font-size", "15")
+          .attr("font-weight", "bold")
+          .attr("text-decoration", "underline")
+          .text("NO2 vs SO2 Scatter Plot");
+      // Add label to the X-axis
+      svg.append("text")
+          .attr("x", width/2)
+          .attr("y",  innerHeight + margin.top + 50)
+          .attr("text-anchor", "middle")
+          .attr("font-family","Merriweather")
+          .attr("font-size", "11")
+          .attr("font-weight", "bold")
+          .style("fill", "#ef4321")
+          .text("NO2 concentration (in ppb)");
+
+      // Add label to the Y-axis
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 25)
+            .attr("x",0 - innerHeight)
+            .attr("font-family","Merriweather")
+            .attr("font-size", "11")
+            .attr("font-weight", "bold")
+            .style("fill", "#ffae00")
+            .text("SO2 concentration (in ppm)");
+
+
+
     </script>
   </body>
 </html>
